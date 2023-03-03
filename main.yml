@@ -37,11 +37,20 @@
 
     - name: "installing mariadb"
       yum:
-        name: mariadb-server
+        name: 
+          - mariadb-server
+          - MySQL-python 
         state: present
  
     - name: "Mariadb- restarting and enabling service"
       service:
         name: mariadb
         state: restarted
-        enabled: true      
+        enabled: true
+    - name: "updating root pass"
+      mysql_user:
+        login_user: root
+        login_password: ""
+        name: root
+        password: "{{ mariadb_root_pass }}"
+        host_all: true
