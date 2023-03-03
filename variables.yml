@@ -1,0 +1,5 @@
+---
+httpd_group: "apache"
+httpd_owner: "apache"
+httpd_domain: "blog.sachin.store"
+httpd_port: "80"

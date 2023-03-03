@@ -2,6 +2,7 @@
 - name: "installing appache webserver"
   hosts: amazon
   become: yes
+  vars_files: variables.yml
   tasks:
 
     - name: "installing httpd"
@@ -15,4 +16,16 @@
         state: restarted
         enabled: true      
 
-          
+    - name: "creating virtualhost from virtualhost"
+      template:
+        src: "./virtualhost.conf.j2"
+        dest: "/etc/httpd/conf.d/{{ httpd_domain }}.conf"
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}"
+ 
+    - name: "Creating the document root"
+      file:
+        path: "/var/www/html/{{ httpd_domain }}"
+        state: directory
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}"      
