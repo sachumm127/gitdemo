@@ -14,7 +14,12 @@
       service:
         name: httpd
         state: restarted
-        enabled: true      
+        enabled: true     
+
+    - name: "creating httpd conf file from httpd.conf.j2"
+      template:
+        src: "./httpd.conf.j2"
+        dest: "/etc/httpd/conf/httpd.conf"      
 
     - name: "creating virtualhost from virtualhost"
       template:
@@ -28,4 +33,15 @@
         path: "/var/www/html/{{ httpd_domain }}"
         state: directory
         owner: "{{ httpd_owner }}"
-        group: "{{ httpd_group }}"      
+        group: "{{ httpd_group }}"     
+
+    - name: "installing mariadb"
+      yum:
+        name: mariadb-server
+        state: present
+ 
+    - name: "Mariadb- restarting and enabling service"
+      service:
+        name: mariadb
+        state: restarted
+        enabled: true      
