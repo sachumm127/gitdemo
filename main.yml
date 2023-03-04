@@ -80,4 +80,57 @@
         password: "{{ mariadb_extra_pass }}"
         state: present
         host: "%"
-        priv: "{{ mariadb_extra_db }}.*:ALL"     
+        priv: "{{ mariadb_extra_db }}.*:ALL"    
+
+
+    - name: "WordPress - downloading archive file {{ wp_url }}"
+      get_url:
+        url: "{{ wp_url }}"
+        dest: "/tmp/wordpress.tar.gz"
+
+   
+    - name: "WordPress - extracting wordpress archive /tmp/wordpress.tar.gz"
+      unarchive:
+        src: "/tmp/wordpress.tar.gz"
+        dest: "/tmp/"
+        remote_src: true
+ 
+ 
+ 
+    - name: "WordPress - copying files to /var/www/html/{{ httpd_domain }}"
+      copy:
+        src: "/tmp/wordpress/"
+        dest: "/var/www/html/{{ httpd_domain }}"
+        remote_src: true
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}"
+ 
+ 
+ 
+    - name: "WordPress - creating wp-config.php from wp-config.php.j2"
+      template:
+        src: "./wp-config.php.j2"
+        dest: "/var/www/html/{{ httpd_domain }}/wp-config.php"
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}"
+  
+ 
+ 
+    - name: " post installation restart"
+      service:
+        name: "{{ item }}"
+        state: restarted
+        enabled: true
+      with_items:
+        - httpd
+        - mariadb
+  
+    
+    - name: "post- installation cleanup"
+      file:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "/tmp/wordpress/"
+        - "/tmp/wordpress.tar.gz"
+        
